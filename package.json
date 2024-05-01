@@ -1,0 +1,28 @@
+{
+  "name": "ss",
+  "version": "0.0.1",
+  "description": "This is my uni application",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app",
+    "dev": "nodemon app"
+  },
+  "author": "Joanna Koczyńska",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "bootstrap": "^5.3.3",
+    "connect-flash": "^0.1.1",
+    "connect-sqlite3": "^0.9.15",
+    "ejs": "^3.1.9",
+    "express": "^4.19.1",
+    "express-session": "^1.18.0",
+    "fullcalendar": "^6.1.11",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "path": "^0.12.7",
+    "sqlite3": "^5.1.7"
+  }
+}
