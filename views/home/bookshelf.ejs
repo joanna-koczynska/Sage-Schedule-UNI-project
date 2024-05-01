@@ -1,0 +1,916 @@
+<%- include('../_partial/_header'); -%>
+  <div class="container-fluid ">
+
+    <div class="row justify-content-between p-0 m-0"
+      style="background-color: #F7CBA1; color: rgb(0, 0, 0); text-align:center; align-items: center;">
+
+      <div class="col-1 p-2">
+        <div id="liveAlertPlaceholder"></div>
+
+        <% if(BooksList.length>=84) { %>
+
+          <button type="button" class="btn addBook" id="liveAlertBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+              class="bi bi-plus-circle-fill" viewBox="0 0 16 16" style="color: #4d2e15;">
+              <path
+                d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
+            </svg>
+          </button>
+
+
+          <% } else { %>
+            <button type="button" class="btn " data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+              <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
+                class="bi bi-plus-circle-fill" viewBox="0 0 16 16" style="color: #4d2e15;">
+                <path
+                  d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3z" />
+              </svg>
+            </button>
+            <% } %>
+      </div>
+
+
+      <div class="col-2 p-2" style="font-weight: bold; font-size: 25px;"> Bookshelf </div>
+
+      <div class="col-1 p-2">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter-left"
+              viewBox="0 0 16 16">
+              <path
+                d="M2 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
+            </svg>
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="/bookshelf" style="color: #000000;">all</a></li>
+            <li><a class="dropdown-item" href="/5StarsBooks" style="color: #636363;"><span style="color: #ff9900;">★★★★★</span></a></li>
+            <li><a class="dropdown-item" href="/4StarsBooks" style="color: #636363;"><span style="color: #ff9900;">★★★★</span>☆</a></li>
+            <li><a class="dropdown-item" href="/3StarsBooks" style="color: #636363;"><span style="color: #ff9900;">★★★</span>☆☆</a></li>
+            <li><a class="dropdown-item" href="/2StarsBooks" style="color: #636363;"><span style="color: #ff9900;">★★</span>☆☆☆</a></li>
+            <li><a class="dropdown-item" href="/1StarsBooks" style="color: #636363;"><span style="color: #ff9900;">★</span>☆☆☆☆</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Form add book -->
+      <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="staticBackdropLabel">New Book</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+              <form class="form=signin" method="POST" action="/bookshelf">
+                <div class="mb-3">
+                  <input type="text" class="form-control" placeholder="Title" name="title">
+                </div>
+
+                <div class="mb-3">
+                  <input type="text" class="form-control" placeholder="Author" name="author">
+                </div>
+
+                <div class="mb-3">
+                  <input type="text" class="form-control" placeholder="Note" name="note">
+                </div>
+
+
+                <fieldset class="rating">
+                  <input type="radio" id="star5" name="rating" value="5"><label for="star5">☆</label>
+                  <input type="radio" id="star4" name="rating" value="4"><label for="star4">☆</label>
+                  <input type="radio" id="star3" name="rating" value="3"><label for="star3">☆</label>
+                  <input type="radio" id="star2" name="rating" value="2"><label for="star2">☆</label>
+                  <input type="radio" id="star1" name="rating" value="1"><label for="star1">☆</label>
+                </fieldset>
+
+                <div>
+                  <button type="submit" id="addDiv">Submit</button>
+                </div>
+              </form>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid bg-image p-0 m-0" style="height: 80vh; width: 100%;">
+
+      <% rowCounter=0; %>
+        <!-- 1 row -->
+        <div class="row p-0" style=" justify-content: center; align-items: end;">
+          <% for (var i=rowCounter*20; i <=rowCounter*20+20; i++ ) { %>
+            <% if( i> BooksList.length-1) { %>
+              <% break; }%>
+            <div class=" book" id="bookDiv<%= i %>" data-bs-toggle="modal" data-bs-target="#bookInfo<%= i %>">
+              <%= BooksList[i].title %>
+            </div>
+
+            <script>
+              function RandomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+
+                for (var i = 0; i < 6; i++) {
+                  color += letters[Math.floor(Math.random() * 16)];
+                }
+
+                return color;
+              }
+
+              function getContrastRatio(color1, color2) {
+                var lum1 = getLuminance(color1) + 0.05;
+                var lum2 = getLuminance(color2) + 0.05;
+                return lum1 > lum2 ? lum1 / lum2 : lum2 / lum1;
+              }
+
+              function getLuminance(color) {
+                var rgb = color.substring(1);
+                var r = parseInt(rgb.substring(0, 2), 16) / 255;
+                var g = parseInt(rgb.substring(2, 4), 16) / 255;
+                var b = parseInt(rgb.substring(4, 6), 16) / 255;
+                return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+              }
+
+
+              var randomColor, contrastRatio;
+              do {
+                randomColor = RandomColor();
+                contrastRatio = getContrastRatio(randomColor, "#ffffff");
+              } while (contrastRatio < 4.5);
+              document.getElementById("bookDiv<%= i %>").style.backgroundColor = randomColor;
+            </script>
+
+            <!-- modal book info -->
+            <div class="modal fade" id="bookInfo<%= i %>" tabindex="-1" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header" style="background-color: rgb(69, 112, 43);">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Book </h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <h4 style="text-align: center;">
+                      <%= BooksList[i].title %>
+                    </h4>
+                    <h6 style="text-align: center;">
+                      <%= BooksList[i].author %>
+                    </h6>
+                  </div>
+
+                  <div class="modal-footer" style=" display:flex; justify-content: start;  align-items:start;">
+                    <h6>
+                      <%= BooksList[i].note %>
+                    </h6>
+                  </div>
+
+                  <div
+                    style="width: 40px; height: 40px; text-align: center; margin: auto;  display:flex; justify-content: center;  align-items:center; border-radius: 100%; background-color: #ffe600;">
+                    <%= BooksList[i].rating %>
+                  </div>
+
+                  <div class="modal-footer">
+                    <button type="button" class="btn" data-bs-dismiss="modal" data-book-id="<%= BooksList[i].id %>"
+                      data-bs-target="#edit<%= i %>" data-bs-toggle="modal">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-pencil-square" viewBox="0 0 16 16">
+                        <path
+                          d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                        <path fill-rule="evenodd"
+                          d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                      </svg> Edit</button>
+
+
+
+                    <button type="button" class="btn deleteBook" data-book-id="<%= BooksList[i].id %>"
+                      data-bs-title="<%= BooksList[i].title %>" data-bs-dismiss="modal">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                        class="bi bi-trash" viewBox="0 0 16 16">
+                        <path
+                          d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                        <path
+                          d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                      </svg> Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+ <!-- modal edit book -->
+            <div class="modal fade" id="edit<%= i %>" tabindex="-1" aria-labelledby="editBookModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="editBookModalLabel">Edit Book </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <form id="editBookForm" method="POST" action="/bookEdit">
+                    <div class="modal-body">
+
+                      <div class="mb-3">
+
+                        <input type="hidden" id="bookId" name="bookId" value="<%= BooksList[i].id %>">
+
+                        <label for="title" class="form-label">Title</label>
+                        <input type="text" class="form-control" id="title" name="title"
+                          value="<%= BooksList[i].title %>">
+                      </div>
+                      <div class="mb-3">
+                        <label for="author" class="form-label">Author</label>
+                        <input type="text" class="form-control" id="author" name="author"
+                          value="<%= BooksList[i].author %>">
+                      </div>
+                      <div class="mb-3">
+                        <label for="note" class="form-label">Note</label>
+                        <textarea class="form-control" id="note" name="note"><%= BooksList[i].note %></textarea>
+                      </div>
+                      <div class="mb-3">
+                        <label for="rating" class="form-label">Rating</label>
+                        <input type="number" class="form-control" id="rating" name="rating" min="1" max="5"
+                          value="<%= BooksList[i].rating %>">
+                      </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+                      <script>
+                        document.getElementById("saveChangesBtn").addEventListener("click", function () {
+                          location.reload();
+                        });
+                      </script>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <% } %>
+        </div>
+        <% rowCounter++; %>
+
+          <!-- 2 row  -->
+          <div class="row p-1" style="justify-content: center;">
+            <% for (var i=rowCounter*20+1; i <=rowCounter*20+21; i++ ) { %>
+              <% if( i> BooksList.length-1) { %>
+                <% break; }%>
+                  <div class=" book" id="bookDiv<%= i %>" data-bs-toggle="modal" data-bs-target="#bookInfo<%= i %>">
+
+                    <%= BooksList[i].title %>
+                  </div>
+
+                  <script>
+                    function RandomColor() {
+                      var letters = '0123456789ABCDEF';
+                      var color = '#';
+
+                      for (var i = 0; i < 6; i++) {
+                        color += letters[Math.floor(Math.random() * 16)];
+                      }
+
+                      return color;
+                    }
+
+                    function getContrastRatio(color1, color2) {
+                      var lum1 = getLuminance(color1) + 0.05;
+                      var lum2 = getLuminance(color2) + 0.05;
+                      return lum1 > lum2 ? lum1 / lum2 : lum2 / lum1;
+                    }
+
+                    function getLuminance(color) {
+                      var rgb = color.substring(1);
+                      var r = parseInt(rgb.substring(0, 2), 16) / 255;
+                      var g = parseInt(rgb.substring(2, 4), 16) / 255;
+                      var b = parseInt(rgb.substring(4, 6), 16) / 255;
+                      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                    }
+
+
+                    var randomColor, contrastRatio;
+                    do {
+                      randomColor = RandomColor();
+                      contrastRatio = getContrastRatio(randomColor, "#ffffff");
+                    } while (contrastRatio < 4.5);
+                    document.getElementById("bookDiv<%= i %>").style.backgroundColor = randomColor;
+                  </script>
+
+                  <!-- modal book info -->
+                  <div class="modal fade" id="bookInfo<%= i %>" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header" style="background-color: rgb(69, 112, 43);">
+                          <h1 class="modal-title fs-5" id="staticBackdropLabel">Book</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <h4 style="text-align: center;">
+                            <%= BooksList[i].title %>
+                          </h4>
+                          <h6 style="text-align: center;">
+                            <%= BooksList[i].author %>
+                          </h6>
+                        </div>
+
+                        <div class="modal-footer" style=" display:flex; justify-content: start;  align-items:start;">
+                          <h6>
+                            <%= BooksList[i].note %>
+                          </h6>
+                        </div>
+
+                        <div
+                          style="width: 40px; height: 40px; text-align: center; margin: auto;  display:flex; justify-content: center;  align-items:center; border-radius: 100%; background-color: #ffe600;">
+                          <%= BooksList[i].rating %>
+                        </div>
+
+                        <div class="modal-footer">
+
+                          <button type="button" class="btn" data-bs-dismiss="modal" data-book-id="<%= BooksList[i].id %>"
+                            data-bs-target="#edit<%= i %>" data-bs-toggle="modal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                              class="bi bi-pencil-square" viewBox="0 0 16 16">
+                              <path
+                                d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                              <path fill-rule="evenodd"
+                                d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                            </svg> Edit</button>
+
+                          <button type="button" class="btn deleteBook" data-book-id="<%= BooksList[i].id %>"
+                            data-bs-dismiss="modal">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                              class="bi bi-trash" viewBox="0 0 16 16">
+                              <path
+                                d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                              <path
+                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                            </svg> Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <!-- modal edit book -->
+                  <div class="modal fade" id="edit<%= i %>" tabindex="-1" aria-labelledby="editBookModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="editBookModalLabel">Edit Book </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="editBookForm" method="POST" action="/bookEdit">
+                          <div class="modal-body">
+      
+                            <div class="mb-3">
+      
+                              <input type="hidden" id="bookId" name="bookId" value="<%= BooksList[i].id %>">
+      
+                              <label for="title" class="form-label">Title</label>
+                              <input type="text" class="form-control" id="title" name="title"
+                                value="<%= BooksList[i].title %>">
+                            </div>
+                            <div class="mb-3">
+                              <label for="author" class="form-label">Author</label>
+                              <input type="text" class="form-control" id="author" name="author"
+                                value="<%= BooksList[i].author %>">
+                            </div>
+                            <div class="mb-3">
+                              <label for="note" class="form-label">Note</label>
+                              <textarea class="form-control" id="note" name="note"><%= BooksList[i].note %></textarea>
+                            </div>
+                            <div class="mb-3">
+                              <label for="rating" class="form-label">Rating</label>
+                              <input type="number" class="form-control" id="rating" name="rating" min="1" max="5"
+                                value="<%= BooksList[i].rating %>">
+                            </div>
+      
+                          </div>
+      
+                          <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+                            <script>
+                              document.getElementById("saveChangesBtn").addEventListener("click", function () {
+                                location.reload();
+                              });
+                            </script>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                  <% } %>
+          </div>
+          <% rowCounter++; %>
+
+            <!-- row 3 -->
+            <div class="row p-0" style="  justify-content: center;">
+              <% for (var i=rowCounter*20+2; i <=rowCounter*20+22; i++ ) {%>
+                <% if( i> BooksList.length-1) { %>
+                  <% break; }%>
+                    <div class=" book" id="bookDiv<%= i %>" data-bs-toggle="modal" data-bs-target="#bookInfo<%= i %>">
+
+                      <%= BooksList[i].title %>
+                    </div>
+
+                    <script>
+                      function RandomColor() {
+                        var letters = '0123456789ABCDEF';
+                        var color = '#';
+
+                        for (var i = 0; i < 6; i++) {
+                          color += letters[Math.floor(Math.random() * 16)];
+                        }
+
+                        return color;
+                      }
+
+                      function getContrastRatio(color1, color2) {
+                        var lum1 = getLuminance(color1) + 0.05;
+                        var lum2 = getLuminance(color2) + 0.05;
+                        return lum1 > lum2 ? lum1 / lum2 : lum2 / lum1;
+                      }
+
+                      function getLuminance(color) {
+                        var rgb = color.substring(1);
+                        var r = parseInt(rgb.substring(0, 2), 16) / 255;
+                        var g = parseInt(rgb.substring(2, 4), 16) / 255;
+                        var b = parseInt(rgb.substring(4, 6), 16) / 255;
+                        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                      }
+
+
+                      var randomColor, contrastRatio;
+                      do {
+                        randomColor = RandomColor();
+                        contrastRatio = getContrastRatio(randomColor, "#ffffff");
+                      } while (contrastRatio < 4.5);
+                      document.getElementById("bookDiv<%= i %>").style.backgroundColor = randomColor;
+                    </script>
+
+                    <!-- modal book info -->
+                    <div class="modal fade" id="bookInfo<%= i %>" tabindex="-1" aria-labelledby="exampleModalLabel"
+                      aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header" style="background-color: rgb(69, 112, 43);">
+                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Book</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <h4 style="text-align: center;">
+                              <%= BooksList[i].title %>
+                            </h4>
+                            <h6 style="text-align: center;">
+                              <%= BooksList[i].author %>
+                            </h6>
+                          </div>
+
+                          <div class="modal-footer" style=" display:flex; justify-content: start;  align-items:start;">
+                            <h6>
+                              <%= BooksList[i].note %>
+                            </h6>
+                          </div>
+
+                          <div
+                            style="width: 40px; height: 40px; text-align: center; margin: auto;  display:flex; justify-content: center;  align-items:center; border-radius: 100%; background-color: #ffe600;">
+                            <%= BooksList[i].rating %>
+                          </div>
+
+                          <div class="modal-footer">
+
+                            <button type="button" class="btn" data-bs-dismiss="modal" data-book-id="<%= BooksList[i].id %>"
+                              data-bs-target="#edit<%= i %>" data-bs-toggle="modal">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                <path
+                                  d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                <path fill-rule="evenodd"
+                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                              </svg> Edit</button>
+
+                            <button type="button" class="btn deleteBook" data-book-id="<%= BooksList[i].id %>"
+                              data-bs-dismiss="modal">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                class="bi bi-trash" viewBox="0 0 16 16">
+                                <path
+                                  d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                <path
+                                  d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                              </svg> Delete
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+
+                     <!-- modal edit book -->
+                  <div class="modal fade" id="edit<%= i %>" tabindex="-1" aria-labelledby="editBookModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="editBookModalLabel">Edit Book </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="editBookForm" method="POST" action="/bookEdit">
+                          <div class="modal-body">
+      
+                            <div class="mb-3">
+      
+                              <input type="hidden" id="bookId" name="bookId" value="<%= BooksList[i].id %>">
+      
+                              <label for="title" class="form-label">Title</label>
+                              <input type="text" class="form-control" id="title" name="title"
+                                value="<%= BooksList[i].title %>">
+                            </div>
+                            <div class="mb-3">
+                              <label for="author" class="form-label">Author</label>
+                              <input type="text" class="form-control" id="author" name="author"
+                                value="<%= BooksList[i].author %>">
+                            </div>
+                            <div class="mb-3">
+                              <label for="note" class="form-label">Note</label>
+                              <textarea class="form-control" id="note" name="note"><%= BooksList[i].note %></textarea>
+                            </div>
+                            <div class="mb-3">
+                              <label for="rating" class="form-label">Rating</label>
+                              <input type="number" class="form-control" id="rating" name="rating" min="1" max="5"
+                                value="<%= BooksList[i].rating %>">
+                            </div>
+      
+                          </div>
+      
+                          <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+                            <script>
+                              document.getElementById("saveChangesBtn").addEventListener("click", function () {
+                                location.reload();
+                              });
+                            </script>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                    <% } %>
+            </div>
+            <% rowCounter++; %>
+
+
+              <!-- 4 row  -->
+              <div class="row p-1" style="  justify-content: center;">
+                <% for (var i=rowCounter*20+3; i <=rowCounter*20+23; i++ ) {%>
+                  <% if( i> BooksList.length-1) { %>
+                    <% break; }%>
+                      <div class=" book" id="bookDiv<%= i %>" data-bs-toggle="modal" data-bs-target="#bookInfo<%= i %>">
+
+                        <%= BooksList[i].title %>
+                      </div>
+
+                      <script>
+                        function RandomColor() {
+                          var letters = '0123456789ABCDEF';
+                          var color = '#';
+
+                          for (var i = 0; i < 6; i++) {
+                            color += letters[Math.floor(Math.random() * 16)];
+                          }
+
+                          return color;
+                        }
+
+                        function getContrastRatio(color1, color2) {
+                          var lum1 = getLuminance(color1) + 0.05;
+                          var lum2 = getLuminance(color2) + 0.05;
+                          return lum1 > lum2 ? lum1 / lum2 : lum2 / lum1;
+                        }
+
+                        function getLuminance(color) {
+                          var rgb = color.substring(1);
+                          var r = parseInt(rgb.substring(0, 2), 16) / 255;
+                          var g = parseInt(rgb.substring(2, 4), 16) / 255;
+                          var b = parseInt(rgb.substring(4, 6), 16) / 255;
+                          return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+                        }
+
+
+                        var randomColor, contrastRatio;
+                        do {
+                          randomColor = RandomColor();
+                          contrastRatio = getContrastRatio(randomColor, "#ffffff");
+                        } while (contrastRatio < 4.5);
+                        document.getElementById("bookDiv<%= i %>").style.backgroundColor = randomColor;
+                      </script>
+
+                      <!-- modal book info -->
+                      <div class="modal fade" id="bookInfo<%= i %>" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                          <div class="modal-content">
+                            <div class="modal-header" style="background-color: rgb(69, 112, 43);">
+                              <h1 class="modal-title fs-5" id="staticBackdropLabel">Book</h1>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <h4 style="text-align: center;">
+                                <%= BooksList[i].title %>
+                              </h4>
+                              <h6 style="text-align: center;">
+                                <%= BooksList[i].author %>
+                              </h6>
+                            </div>
+
+                            <div class="modal-footer"
+                              style=" display:flex; justify-content: start;  align-items:start;">
+                              <h6>
+                                <%= BooksList[i].note %>
+                              </h6>
+                            </div>
+
+                            <div
+                              style="width: 40px; height: 40px; text-align: center; margin: auto;  display:flex; justify-content: center;  align-items:center; border-radius: 100%; background-color: #ffe600;">
+                              <%= BooksList[i].rating %>
+                            </div>
+
+                            <div class="modal-footer">
+
+                              <button type="button" class="btn" data-bs-dismiss="modal" data-book-id="<%= BooksList[i].id %>"
+                                data-bs-target="#edit<%= i %>" data-bs-toggle="modal">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                  class="bi bi-pencil-square" viewBox="0 0 16 16">
+                                  <path
+                                    d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z" />
+                                  <path fill-rule="evenodd"
+                                    d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z" />
+                                </svg> Edit</button>
+
+                              <button type="button" class="btn deleteBook" data-book-id="<%= BooksList[i].id %>"
+                                data-bs-dismiss="modal">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                  class="bi bi-trash" viewBox="0 0 16 16">
+                                  <path
+                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                  <path
+                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                </svg> Delete
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+
+                       <!-- modal edit book -->
+                  <div class="modal fade" id="edit<%= i %>" tabindex="-1" aria-labelledby="editBookModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="editBookModalLabel">Edit Book </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form id="editBookForm" method="POST" action="/bookEdit">
+                          <div class="modal-body">
+      
+                            <div class="mb-3">
+      
+                              <input type="hidden" id="bookId" name="bookId" value="<%= BooksList[i].id %>">
+      
+                              <label for="title" class="form-label">Title</label>
+                              <input type="text" class="form-control" id="title" name="title"
+                                value="<%= BooksList[i].title %>">
+                            </div>
+                            <div class="mb-3">
+                              <label for="author" class="form-label">Author</label>
+                              <input type="text" class="form-control" id="author" name="author"
+                                value="<%= BooksList[i].author %>">
+                            </div>
+                            <div class="mb-3">
+                              <label for="note" class="form-label">Note</label>
+                              <textarea class="form-control" id="note" name="note"><%= BooksList[i].note %></textarea>
+                            </div>
+                            <div class="mb-3">
+                              <label for="rating" class="form-label">Rating</label>
+                              <input type="number" class="form-control" id="rating" name="rating" min="1" max="5"
+                                value="<%= BooksList[i].rating %>">
+                            </div>
+      
+                          </div>
+      
+                          <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary" id="saveChangesBtn">Save Changes</button>
+                            <script>
+                              document.getElementById("saveChangesBtn").addEventListener("click", function () {
+                                location.reload();
+                              });
+                            </script>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                      <% } %>
+              </div>
+              <% rowCounter++; %>
+
+
+    </div>
+
+
+
+  </div>
+
+
+  <script>
+
+    document.querySelectorAll(".deleteBook").forEach(function (button) {
+      button.addEventListener("click", function () {
+        var bookId = this.getAttribute("data-book-id");
+        $.ajax({
+          url: '/bookDelete',
+          method: 'GET',
+          data: { bookId: bookId },
+          success: function (response) {
+            console.log('Książka została pomyślnie usunięta z bazy danych.', response);
+          },
+          error: function (xhr, status, error) {
+            console.error('Wystąpił błąd podczas usuwania książki z bazy danych:', error);
+          }
+        });
+        location.reload();
+      });
+    });
+
+
+
+
+    const alertPlaceholder = document.getElementById('liveAlertPlaceholder')
+    const appendAlert = (message, type) => {
+      const wrapper = document.createElement('div')
+      wrapper.innerHTML = [
+        `<div class="alert alert-${type} alert-dismissible position-absolute" role="alert">`,
+        `   <div>${message}</div>`,
+        '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+        '</div>'
+      ].join('')
+
+      alertPlaceholder.append(wrapper)
+    }
+
+    const alertTrigger = document.getElementById('liveAlertBtn')
+    if (alertTrigger) {
+      alertTrigger.addEventListener('click', () => {
+        appendAlert('You have to many books', 'danger')
+      })
+    }
+
+    function RandomColor() {
+      var letters = '0123456789ABCDEF';
+      var color = '#';
+
+      for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+
+      return color;
+    }
+
+    function getContrastRatio(color1, color2) {
+      var lum1 = getLuminance(color1) + 0.05;
+      var lum2 = getLuminance(color2) + 0.05;
+      return lum1 > lum2 ? lum1 / lum2 : lum2 / lum1;
+    }
+
+    function getLuminance(color) {
+      var rgb = color.substring(1);
+      var r = parseInt(rgb.substring(0, 2), 16) / 255;
+      var g = parseInt(rgb.substring(2, 4), 16) / 255;
+      var b = parseInt(rgb.substring(4, 6), 16) / 255;
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    }
+
+
+
+
+
+    function addBook(id) {
+      var book = document.createElement("div");
+      book.classList.add("id");
+
+      var randomColor, contrastRatio;
+      do {
+        randomColor = RandomColor();
+        contrastRatio = getContrastRatio(randomColor, "#ffffff");
+      } while (contrastRatio < 4.5);
+      book.style.backgroundColor = randomColor;
+
+      book.textContent = "title";
+      document.getElementById("id").appendChild(book);
+    }
+
+    document.getElementById("addDiv").addEventListener("click", addNewBook);
+
+
+
+    const form = document.querySelector("form");
+    const log = document.querySelector("#log");
+
+    form.addEventListener(
+      "submit", (event) => {
+        const data = new FormData(form);
+        let output = "";
+        for (const entry of data) {
+          output = `${output}${entry[0]}=${entry[1]}\r`;
+        }
+        log.innerText = output;
+        event.preventDefault();
+      },
+      false,
+    );
+
+
+  </script>
+
+  <style>
+    body {
+      background-color: #4d2e15;
+    }
+
+    .addBook:hover {
+      border-radius: 30px;
+      background-color: rgba(177, 177, 177, 0.185);
+    }
+
+    .addBook {
+      border-radius: 30px;
+      width: max-content;
+    }
+
+    .book {
+      width: 4%;
+      height: 15%;
+      margin-top: 2%;
+
+      border: 1px solid #000;
+      border-radius: 5px;
+      text-align: center;
+
+      font-size: 16px;
+      color: #fff;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+
+      overflow: hidden;
+white-space: nowrap;
+text-overflow: ellipsis;
+    }
+
+
+
+
+    /* //////////////// */
+
+    .rating {
+      /* display: inline-block; */
+      unicode-bidi: bidi-override;
+      direction: rtl;
+      text-align: center;
+    }
+
+    .rating input {
+      display: none;
+    }
+
+    .rating label {
+      cursor: pointer;
+      width: 1em;
+      font-size: 2em;
+      color: #000000;
+    }
+
+
+    .rating input:checked~label:before {
+      position: absolute;
+      color: #e52;
+      content: '★';
+    }
+
+    .bg-image {
+      background-image: url('bookshelf.png');
+      /* background-size: cover; */
+      background-size: 100% 100%;
+      background-position: center;
+    }
+  </style>
+
+  <%- include ('../_partial/_footer'); -%>

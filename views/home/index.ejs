@@ -1,0 +1,33 @@
+<%- include('../_partial/_homeHeader'); -%>
+
+<div class="container ">
+
+    <div class="d-flex justify-content-center p-5">
+        <img id="img2" src="/logo.png"  alt="..." style=" width: 700px; height: auto; opacity:0;">
+    </div>
+   
+
+    <div class="d-grid gap-2 col-6 mx-auto">
+<a href="/login" class="btn btn-success btn-lg btn-block" role="button" >Log in</a>
+
+<a href="/signup" class="btn btn-secondary btn-lg btn-block" role="button" >Sign Up</a>
+
+</div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var img2 = document.getElementById("img2");
+
+        function imgAnimation() {
+           
+            img2.style.opacity = "1";
+            img2.style.transition = "2s";
+        }
+
+        setTimeout(imgAnimation, 500);
+    });
+</script>
+
+<%- include ('../_partial/_footer'); -%>

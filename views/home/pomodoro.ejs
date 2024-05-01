@@ -1,0 +1,569 @@
+<%- include('../_partial/_header'); -%>
+
+	<div class="container-fluid" id="scene-container" style="margin: 0px; background-color: black; ">
+
+		<div class="container-fluid "  >
+
+			<div class=" position-absolute top-50 start-50 translate-middle">
+				<!-- timer -->
+				<div class="container timer d-flex justify-content-center  align-items: center;">
+					<div class="row">
+						<div class="col-5">
+							<p id="minutes" style="font-size: 50px;"></p>
+						</div>
+						<div class="col-2">
+							<p style="font-size: 50px;">:</p>
+						</div>
+						<div class="col-5">
+							<p id="seconds" style="font-size: 50px;"></p>
+						</div>
+					</div>
+				</div>
+
+
+				<!-- start and reset -->
+				<div class="row justify-content-center align-items-center my-5">
+
+					<div class="col">
+						<button class="btn mx-5 start_reset" id="lightCandle" onclick="toggleLight(); start(); cameraStartStop();"
+						style=" color: rgb(255, 255, 255);"><svg xmlns="http://www.w3.org/2000/svg" width="45"
+							height="45" fill="currentColor" class="bi bi-play-circle-fill" viewBox="0 0 16 16">
+							<path
+								d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814z" />
+						</svg></button>
+					</div>
+					
+					<div class="col">
+					<a href="/pomodoro" class="btn mx-5 start_reset" style=" color: rgb(179, 179, 179);"><svg
+							xmlns="http://www.w3.org/2000/svg" width="45" height="45" fill="currentColor"
+							class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+							<path
+								d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9" />
+							<path fill-rule="evenodd"
+								d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z" />
+						</svg></a>
+				</div>
+			</div>
+
+				<div>
+					<h3 id="done"></h3>
+
+				</div>
+
+			</div>
+			<div class="position-fixed bottom-0 start-0">  
+				<iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DWWQRwui0ExPn?si=edfbd917b85d440d"
+				width="400" height="max-content" frameborder="0" allowtransparency="true"
+				allow="encrypted-media"></iframe>
+
+			</div>
+			
+		</div>
+
+	</div>
+
+	<%- include ('../_partial/_footer'); -%>
+
+		<script>
+			var minutes = 25;
+			var seconds = 0;
+			var counter = 0;
+
+			var click = new Audio("click.mp3");
+			var bell = new Audio("bell.mp3");
+
+			function template() {
+				document.getElementById("minutes").innerHTML = minutes;
+				document.getElementById("seconds").innerHTML = seconds;
+			}
+
+			function start() {
+				counter += 1;
+				click.play();
+				minutes = 24;
+				seconds = 59;
+				document.getElementById("minutes").innerHTML = minutes;
+				document.getElementById("seconds").innerHTML = seconds;
+
+				document.querySelector('.timer').style.backgroundColor = '#ffffff41';
+				var minutes_interval = setInterval(minutesTimer, 60000);
+				var seconds_interval = setInterval(secondsTimer, 1000);
+
+				function minutesTimer() {
+					minutes = minutes - 1;
+					document.getElementById("minutes").innerHTML = minutes;
+				}
+
+				function secondsTimer() {
+					seconds = seconds - 1;
+					document.getElementById("seconds").innerHTML = seconds;
+
+					if (seconds <= 55) {
+						if (minutes <= 24) {
+							if (counter < 4) {
+								clearInterval(minutes_interval);
+								clearInterval(seconds_interval);
+
+								document.getElementById("done").classList.add("show_message")
+								setTimeout(function () {
+									document.getElementById("done").classList.remove("show_message");
+
+								}, 300000);
+
+								bell.play();
+								cameraStartStop();
+								shortBreak()
+
+							}
+							else {
+								counter = 0;
+								clearInterval(minutes_interval);
+								clearInterval(seconds_interval);
+
+								document.getElementById("done").classList.add("show_2message")
+								setTimeout(function () {
+									document.getElementById("done").classList.remove("show_2message");
+
+								}, 1800000);
+
+								bell.play();
+								cameraStartStop();
+								LongBreak()
+
+							}
+							seconds = 60;
+						}
+					}
+				}
+
+			}
+
+
+			function shortBreak() {
+				click.play();
+				minutes = 4;
+				seconds = 59;
+				document.getElementById("minutes").innerHTML = minutes;
+				document.getElementById("seconds").innerHTML = seconds;
+
+				document.querySelector('.timer').style.backgroundColor = '#525fd6';
+
+				var minutes_interval = setInterval(minutesTimer, 60000);
+				var seconds_interval = setInterval(secondsTimer, 1000);
+
+				function minutesTimer() {
+					minutes = minutes - 1;
+					document.getElementById("minutes").innerHTML = minutes;
+				}
+
+				function secondsTimer() {
+					seconds = seconds - 1;
+					document.getElementById("seconds").innerHTML = seconds;
+
+					if (seconds <= 55) {
+						if (minutes <= 4) {
+							clearInterval(minutes_interval);
+							clearInterval(seconds_interval);
+
+							cameraStartStop();
+							start();
+						}
+						seconds = 60;
+					}
+				}
+
+			}
+
+
+			function LongBreak() {
+				click.play();
+				minutes = 29;
+				seconds = 59;
+				document.getElementById("minutes").innerHTML = minutes;
+				document.getElementById("seconds").innerHTML = seconds;
+
+				document.querySelector('.timer').style.backgroundColor = '#1e7525';
+
+				var minutes_interval = setInterval(minutesTimer, 60000);
+				var seconds_interval = setInterval(secondsTimer, 1000);
+
+				function minutesTimer() {
+					minutes = minutes - 1;
+					document.getElementById("minutes").innerHTML = minutes;
+				}
+
+				function secondsTimer() {
+					seconds = seconds - 1;
+					document.getElementById("seconds").innerHTML = seconds;
+
+					if (seconds <= 55) {
+						if (minutes <= 29) {
+							clearInterval(minutes_interval);
+							clearInterval(seconds_interval);
+
+							cameraStartStop();
+							start();
+						}
+						seconds = 60;
+					}
+				}
+
+			}
+
+
+
+
+
+			window.onload = function () {
+				template();
+			};
+		</script>
+
+
+		<script src="js/three.js"> </script>
+		<script src="js/loaders/DDSLoader.js"></script>
+		<script src="js/loaders/MTLLoader.js"></script>
+		<script src="js/loaders/OBJMTLLoader.js"></script>
+		<script src="js/Detector.js"></script>
+
+		<script>
+			var delta = 0.00;
+			var deltaTmp = 0.00;
+			function cameraStartStop() {
+				if (delta == 0.009) { delta = deltaTmp; }
+				else { delta = 0.009; }
+			}
+
+
+		</script>
+
+
+
+		<script>
+
+			var camera, scene, renderer;
+			var windowHalfX = window.innerWidth;
+			var windowHalfY = window.innerHeight;
+
+			scene = new THREE.Scene();
+
+			camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 20, 4096);
+			camera.position.set(0, 500, 1700);
+			camera.lookAt(new THREE.Vector3(-500, 400, 100));
+			camera.castShadow = true;
+
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setClearColor(0x26372C);
+			renderer.shadowMapEnabled = true;
+			renderer.shadowMapType = THREE.PCFSoftShadowMap;
+
+			document.body.appendChild(renderer.domElement);
+
+			// scene 
+			var deskTex = THREE.ImageUtils.loadTexture('catCandleAnimation/O5GLL70.jpg');
+			deskTex.wrapS = THREE.RepeatWrapping;
+			deskTex.wrapT = THREE.RepeatWrapping;
+			deskTex.anisotropy = 16;
+
+			var DeskMaterial = new THREE.MeshBasicMaterial({ map: deskTex });
+			var DeskGeometry = new THREE.CubeGeometry(2500, 100, 800);
+			var desk = new THREE.Mesh(DeskGeometry, DeskMaterial);
+			desk.position.x = -350;
+			desk.position.y = -100;
+			desk.position.z = 500;
+			scene.add(desk);
+
+
+			//window
+			var cityTex = THREE.ImageUtils.loadTexture('catCandleAnimation/sky2.jpg');
+			cityTex.wrapS = THREE.RepeatWrapping;
+			cityTex.wrapT = THREE.RepeatWrapping;
+			cityTex.anisotropy = 16;
+
+			var cityMaterial = new THREE.MeshPhongMaterial({ map: cityTex });
+			var cityGeometry = new THREE.CubeGeometry(1890, 2000, 8);
+			var city = new THREE.Mesh(cityGeometry, cityMaterial);
+			city.position.x = -455;
+			city.position.y = 700;
+			city.position.z = -500;
+			scene.add(city);
+
+
+			//poster
+			var posterTex = THREE.ImageUtils.loadTexture('catCandleAnimation/wave.jpg');
+			posterTex.wrapS = THREE.RepeatWrapping;
+			posterTex.wrapT = THREE.RepeatWrapping;
+			posterTex.anisotropy = 16;
+
+			var posterMaterial = new THREE.MeshPhongMaterial({ map: posterTex });
+			var posterGeometry = new THREE.CubeGeometry(8, 1024, 800);
+			var poster = new THREE.Mesh(posterGeometry, posterMaterial);
+			poster.position.x = -1900;
+			poster.position.y = 700;
+			poster.position.z = 300;
+			scene.add(poster);
+
+
+			//left wall
+			var wallTex = THREE.ImageUtils.loadTexture('catCandleAnimation/green.jpg');
+			wallTex.wrapS = THREE.RepeatWrapping;
+			wallTex.wrapT = THREE.RepeatWrapping;
+
+			var wallMaterial = new THREE.MeshPhongMaterial({ map: wallTex });
+			var wallGeometry = new THREE.CubeGeometry(100, 2500, 2000);
+			var wall = new THREE.Mesh(wallGeometry, wallMaterial);
+			wall.position.x = -2500;
+			wall.position.y = 500;
+			wall.position.z = 250;
+			scene.add(wall);
+
+
+			//lights
+			var directionalLight = new THREE.DirectionalLight(0xe0ae63, 0.5);
+			directionalLight.castShadow = true;
+			directionalLight.position.set(10, 800, -300);
+			directionalLight.shadowCameraNear = 1;
+			directionalLight.shadowCameraFar = 800;
+			directionalLight.shadowCameraRight = 150;
+			directionalLight.shadowCameraLeft = -60;
+			directionalLight.shadowCameraTop = 100;
+			directionalLight.shadowCameraBottom = -100;
+			//directionalLight.shadowCameraVisible = true;  //schemat oddzialywania swiatla
+			scene.add(directionalLight);
+
+			scene.add(new THREE.AmbientLight(0xa89b83));
+
+			var sun = new THREE.PointLight(0xe0ae63, 0.15);
+			sun.position.set(10, 800, -300);
+			scene.add(sun);
+
+
+			// objects
+
+
+			var onProgress = function (xhr) {
+				if (xhr.lengthComputable) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log(Math.round(percentComplete, 2) + '% downloaded');
+				}
+			};
+
+			var onError = function (xhr) {
+			};
+
+
+			THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
+
+			//cat
+			var loader = new THREE.OBJMTLLoader();
+			loader.load('catCandleAnimation/cat/cat.obj', 'catCandleAnimation/cat/cat.mtl', function (cat) {
+				cat.position.x = -1300;
+				cat.position.y = -100;
+				cat.position.z = 100;
+				cat.castShadow = true;
+				cat.receiveShadow = false;
+				scene.add(cat);
+			}, onProgress, onError);
+
+			//candle
+			var loader = new THREE.OBJMTLLoader();
+			loader.load('catCandleAnimation/candle/candle.obj', 'catCandleAnimation/candle/candle.mtl', function (candle) {
+				candle.position.x = 0;
+				candle.position.y = 0;
+				candle.position.z = 200;
+				candle.castShadow = false;
+				candle.receiveShadow = true;
+				scene.add(candle);
+			}, onProgress, onError);
+
+
+			//window frames
+			var loader = new THREE.OBJMTLLoader();
+			loader.load('catCandleAnimation/Window/Window.obj', 'catCandleAnimation/Window/Window.mtl', function (frames) {
+				frames.position.x = -900;
+				frames.position.y = -38;
+				frames.position.z = 0;
+				scene.add(frames);
+			}, onProgress, onError);
+
+			//plant
+			var loader = new THREE.OBJMTLLoader();
+			loader.load('catCandleAnimation/plant/model.obj', 'catCandleAnimation/plant/model.mtl', function (plant) {
+				plant.position.x = 350;
+				plant.position.y = -30;
+				plant.position.z = 150;
+				scene.add(plant);
+			}, onProgress, onError);
+
+
+			//flames
+			var geometry = new THREE.Geometry();
+
+			geometry.vertices.push(new THREE.Vector3(-6.5, -6.5, -6.5));
+			geometry.vertices.push(new THREE.Vector3(-6.5, -6.5, 6.5));
+			geometry.vertices.push(new THREE.Vector3(6.5, -6.5, 6.5));
+			geometry.vertices.push(new THREE.Vector3(6.5, -6.5, -6.5));
+			geometry.vertices.push(new THREE.Vector3(0, 25, 0));
+
+			geometry.faces.push(new THREE.Face3(0, 1, 4));
+			geometry.faces.push(new THREE.Face3(1, 2, 4));
+			geometry.faces.push(new THREE.Face3(2, 3, 4));
+			geometry.faces.push(new THREE.Face3(3, 0, 4));
+
+			var textures = ['catCandleAnimation/flame.jpg'];
+			var materials = [];
+
+			for (var i = 0; i < textures.length; i++) {
+				var texture = THREE.ImageUtils.loadTexture(textures[i]);
+				texture.anisotropy = renderer.getMaxAnisotropy();
+				materials.push(new THREE.MeshBasicMaterial({ map: texture }));
+			}
+
+			var flameTex = THREE.ImageUtils.loadTexture('catCandleAnimation/flame.jpg');
+			flameTex.wrapS = THREE.RepeatWrapping;
+			flameTex.wrapT = THREE.RepeatWrapping;
+
+			geometry.faceVertexUvs[0] = [];
+
+			geometry.faceVertexUvs[0][0] = [new THREE.Vector2(0, 0), new THREE.Vector2(0.5, 0), new THREE.Vector2(0.5, 0.5)];
+			geometry.faceVertexUvs[0][1] = [new THREE.Vector2(0.5, 0), new THREE.Vector2(1, 0), new THREE.Vector2(1, 0.5)];
+
+			geometry.faceVertexUvs[0][2] = [new THREE.Vector2(0, 0.5), new THREE.Vector2(0.5, 0.5), new THREE.Vector2(0.5, 1)];
+			geometry.faceVertexUvs[0][3] = [new THREE.Vector2(0.5, 0.5), new THREE.Vector2(1, 0.5), new THREE.Vector2(1, 1)];
+
+
+
+			pyramid1 = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+			pyramid1.position.set(115, 170, 370)
+			scene.add(pyramid1);
+			pyramid1.visible = false;
+
+			pyramid2 = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+			pyramid2.position.set(223, 170, 370)
+			scene.add(pyramid2);
+			pyramid2.visible = false;
+
+			pyramid3 = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+			pyramid3.position.set(168, 170, 285)
+			scene.add(pyramid3);
+			pyramid3.visible = false;
+
+
+
+			//flame point light
+			var flame1, flame2, flame3;
+			var sphere = new THREE.SphereGeometry(8, 8, 8);
+
+			var lightSphereMesh1 = new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ map: flameTex }));
+			lightSphereMesh1.visible = false;
+
+			var lightSphereMesh2 = new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ map: flameTex }));
+			lightSphereMesh2.visible = false;
+
+			var lightSphereMesh3 = new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ map: flameTex }));
+			lightSphereMesh3.visible = false;
+
+			flame1 = new THREE.PointLight(0xffa200, 0, 300);
+			flame1.position.set(115, 165, 370)
+			flame1.castShadow = true;
+
+
+			flame2 = new THREE.PointLight(0xffa200, 0, 300);
+			flame2.position.set(223, 165, 370)
+			flame2.castShadow = true;
+
+
+			flame3 = new THREE.PointLight(0xffa200, 0, 300);
+			flame3.position.set(168, 165, 285)
+			flame3.castShadow = true;
+
+			scene.add(flame1);
+			scene.add(flame2);
+			scene.add(flame3);
+
+
+			flame1.add(lightSphereMesh1);
+			flame2.add(lightSphereMesh2);
+			flame3.add(lightSphereMesh3);
+
+			function toggleLight() {
+				flame1.intensity = (flame1.intensity == 0) ? 0.3 : 0;
+				flame2.intensity = (flame2.intensity == 0) ? 0.3 : 0;
+				flame3.intensity = (flame3.intensity == 0) ? 0.3 : 0;
+
+				lightSphereMesh1.visible = !lightSphereMesh1.visible;
+				lightSphereMesh2.visible = !lightSphereMesh2.visible;
+				lightSphereMesh3.visible = !lightSphereMesh3.visible;
+
+				pyramid1.visible = !pyramid1.visible;
+				pyramid2.visible = !pyramid2.visible;
+				pyramid3.visible = !pyramid3.visible;
+			}
+
+
+
+			var kat = 0;
+			function render() {
+				requestAnimationFrame(render);
+				kat -= delta;
+				camera.position.x = Math.sin(kat) * 200;
+
+				pyramid1.rotation.y += 0.01;
+				pyramid2.rotation.y += 0.01;
+				pyramid3.rotation.y += 0.01;
+
+				renderer.render(scene, camera);
+			}
+			render();
+
+		</script>
+
+		<style>
+			body {
+				overflow: hidden;
+			}
+
+	
+			.timer {
+				background-color: #ffffff41;
+				color: white;
+				text-align: center;
+				width: 30rem;
+				height: 30rem;
+				border: 5px solid white;
+				border-radius: 20rem;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.row {
+				width: 100%;
+			}
+
+			.show_message {
+				display: block;
+				color: white;
+				background-color: rgba(68, 68, 68, 0.479);
+				padding: 1rem;
+				text-align: center;
+			}
+
+			.show_message::after {
+				content: "Session Completed. Take a Break";
+			}
+
+
+			.show_2message {
+				display: block;
+				color: white;
+				background-color: rgba(68, 68, 68, 0.479);
+				padding: 1rem;
+				text-align: center;
+			}
+
+			.show_2message::after {
+				content: "Take a Long Break";
+			}
+		</style>

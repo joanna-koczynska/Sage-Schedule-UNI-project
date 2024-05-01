@@ -1,0 +1,870 @@
+<%- include('../_partial/_header'); -%>
+
+    <div class="container-fluid text-center">
+        <div class="row grid gap-3" style=" justify-content: space-between;">
+
+            <div class="col-4 p-2 justify-content-btw">
+
+                <div class="row">
+                    <div id='calendar' style="height: max-content;"></div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Add to calendar </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                                <form method="POST" action="/event">
+                                    <div class="mb-3">
+                                        <label for="eventTitle" class="form-label">Title:</label>
+                                        <input type="text" class="form-control" id="eventTitle" name="title">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="eventStart" class="form-label">Start:</label>
+                                        <input type="datetime-local" class="form-control" id="eventStart" name="start">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="eventEnd" class="form-label">End:</label>
+                                        <input type="datetime-local" class="form-control" id="eventEnd" name="end">
+                                    </div>
+
+                                    <fieldset>
+                                        <legend>Select a category:</legend>
+
+                                        <div class="radio-container">
+                                            <input type="radio" id="task" name="category" value="task"
+                                                class="radio-input" />
+                                            <label for="task" class="task">Task</label>
+                                        </div>
+
+                                        <div class="radio-container">
+                                            <input type="radio" id="event" name="category" value="event"
+                                                class="radio-input" />
+                                            <label for="event" class="event">Event</label>
+                                        </div>
+
+                                        <div class="radio-container">
+                                            <input type="radio" id="important" name="category" value="important"
+                                                class="radio-input" />
+                                            <label for="important" class="important">Important</label>
+                                        </div>
+
+                                    </fieldset>
+
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                            cancel</button>
+                                        <button type="submit" id="saveEventBtn" class="btn btn-primary">Save</button>
+                                    </div>
+
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal update delete and edit -->
+                <div class="modal fade" id="UpdateEventModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Event </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+
+                            <div class="modal-body">
+                                <button type="button" id="confirmDeleteEvent" class="btn"><svg
+                                        xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                        class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path
+                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                        <path
+                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                    </svg> delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row mt-5">
+                    <% if(note.length>0) { %>
+                        <textarea class="form-control" id="note" rows="6" placeholder="tap to note..."
+                        style="resize: none; overflow-y: scroll;"
+                        note-id="<%= note[0].id %>"><%= note[0].note %></textarea>
+                        <% } else {%>
+                                <textarea class="form-control" id="note" rows="6" placeholder="tap to note..."
+                                style="resize: none; overflow-y: scroll;"></textarea>
+                                <% } %>
+                          
+                </div>
+
+            </div>
+
+
+            <div class="col-4 p-2">
+
+                <div id='list'></div>
+
+
+                <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px;">
+
+                    <div style="display: flex;">
+                        <div class="square" style="height: 20px;
+                        width:20px;
+                        background-color: #0084ff; margin-right: 5px;"></div>Task
+                    </div>
+                    <div style="display: flex;">
+                        <div class="square" style="height: 20px;
+                        width:20px;
+                        background-color: #ffbb00;  margin-right: 5px;"></div>Event
+                    </div>
+                    <div style="display: flex;">
+                        <div class="square" style="height: 20px;
+                        width:20px;
+                        background-color: #dd0101; margin-right: 5px;"></div>
+                        Important
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-2 p-4 " id="Habits" style="
+            height:90vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            text-align: center;">
+
+                <div style="background-color: #BECE7A; display: flex; ;
+                justify-content: center;
+                align-items: center;
+                padding: 5px;
+                gap: 30px;">
+                    <h5 style="font-weight: bolder; text-align: center;">HABITS</h5>
+
+                    <button type="button" class="btn buttonIcon text-center" onclick="addHabit()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor"
+                            class="bi bi-plus-circle" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                            <path
+                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div style=" border: 1px solid black; background-color: #B8C4A1; margin-top: 20px;" id="0"
+                    class="habit">
+                    <div style=" display: flex; background-color: transparent; justify-content: space-between;">
+                        <form method="POST" action="/habit" style="display: flex;">
+                            <input class="habitName" type="text" name="name" placeholder="New habit" />
+                            <input type="submit" value="&#x2713;">
+                        </form>
+                        <button class="btn buttonIcon" onclick="removeHabit(this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                class="bi bi-trash" viewBox="0 0 16 16">
+                                <path
+                                    d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                <path
+                                    d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                            </svg>
+                        </button>
+
+                    </div>
+
+                    <div class="habitCheck" style="padding-top: 15px;">
+
+                        <label>
+                            <input type="checkbox" name="checkbox" />
+                        </label>
+
+                        <label>
+                            <input type="checkbox" name="checkbox" />
+                        </label>
+
+                        <label>
+                            <input type="checkbox" name="checkbox" />
+                        </label>
+
+                        <label>
+                            <input type="checkbox" name="checkbox" />
+                        </label>
+
+                        <label>
+                            <input type="checkbox" name="checkbox" />
+                        </label>
+
+                        <label>
+                            <input type="checkbox" name="checkbox" />
+                        </label>
+
+                        <label>
+                            <input type="checkbox" name="checkbox" />
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+
+                <% habitsList.forEach(function(habit, index) { %>
+                    <div style=" border: 1px solid black; background-color: #B8C4A1; margin-top: 20px;"
+                        id="<%= index %>" class="habit">
+                        <div style=" display: flex; background-color: transparent; justify-content: space-between;">
+                            <h6 class="habitName" name="name">
+                                <%= habit.name %>
+                            </h6>
+                            <a href="/habitDelete?id=<%= habit.id %>"><button class="btn buttonIcon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                                        class="bi bi-trash" viewBox="0 0 16 16">
+                                        <path
+                                            d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z" />
+                                        <path
+                                            d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z" />
+                                    </svg>
+                                </button></a>
+                        </div>
+
+                        <div class="habitCheck">
+                            <label>
+                                su
+                                <% if(habit.day1==1) { %>
+                                    <input type="checkbox" name="checkbox" value="<%= habit.day1 %>" id="myCheckbox"
+                                        data-day="day1" data-habit-id="<%= habit.id %>" checked />
+                                    <% } else { %>
+                                        <input type="checkbox" name="checkbox" value="<%= habit.day1 %>" id="myCheckbox"
+                                            data-day="day1" data-habit-id="<%= habit.id %>" />
+                                        <% } %>
+                            </label>
+
+                            <label>
+                                mo
+                                <% if(habit.day2==1) { %>
+                                    <input type="checkbox" name="checkbox" value="<%= habit.day2 %>" id="myCheckbox"
+                                        data-day="day2" data-habit-id="<%= habit.id %>" checked />
+                                    <% } else { %>
+                                        <input type="checkbox" name="checkbox" value="<%= habit.day2 %>" id="myCheckbox"
+                                            data-day="day2" data-habit-id="<%= habit.id %>" />
+                                        <% } %>
+                            </label>
+
+                            <label>
+                                tu
+                                <% if(habit.day3==1) { %>
+                                    <input type="checkbox" name="checkbox" value="<%= habit.day3 %>" id="myCheckbox"
+                                        data-day="day3" data-habit-id="<%= habit.id %>" checked />
+                                    <% } else { %>
+                                        <input type="checkbox" name="checkbox" value="<%= habit.day3 %>" id="myCheckbox"
+                                            data-day="day3" data-habit-id="<%= habit.id %>" />
+                                        <% } %>
+                            </label>
+
+                            <label>
+                                we
+                                <% if(habit.day4==1) { %>
+                                    <input type="checkbox" name="checkbox" value="<%= habit.day4 %>" id="myCheckbox"
+                                        data-day="day4" data-habit-id="<%= habit.id %>" checked />
+                                    <% } else { %>
+                                        <input type="checkbox" name="checkbox" value="<%= habit.day4 %>" id="myCheckbox"
+                                            data-day="day4" data-habit-id="<%= habit.id %>" />
+                                        <% } %>
+                            </label>
+
+                            <label>
+                                th
+                                <% if(habit.day5==1) { %>
+                                    <input type="checkbox" name="checkbox" value="<%= habit.day5 %>" id="myCheckbox"
+                                        data-day="day5" data-habit-id="<%= habit.id %>" checked />
+                                    <% } else { %>
+                                        <input type="checkbox" name="checkbox" value="<%= habit.day5 %>" id="myCheckbox"
+                                            data-day="day5" data-habit-id="<%= habit.id %>" />
+                                        <% } %>
+                            </label>
+
+                            <label>
+                                fr
+                                <% if(habit.day6==1) { %>
+                                    <input type="checkbox" name="checkbox" value="<%= habit.day6 %>" id="myCheckbox"
+                                        data-day="day6" data-habit-id="<%= habit.id %>" checked />
+                                    <% } else { %>
+                                        <input type="checkbox" name="checkbox" value="<%= habit.day6 %>" id="myCheckbox"
+                                            data-day="day6" data-habit-id="<%= habit.id %>" />
+                                        <% } %>
+                            </label>
+
+                            <label>
+                                sa
+                                <% if(habit.day7==1) { %>
+                                    <input type="checkbox" name="checkbox" value="<%= habit.day7 %>" id="myCheckbox"
+                                        data-day="day7" data-habit-id="<%= habit.id %>" checked />
+                                    <% } else { %>
+                                        <input type="checkbox" name="checkbox" value="<%= habit.day7 %>" id="myCheckbox"
+                                            data-day="day7" data-habit-id="<%= habit.id %>" />
+                                        <% } %>
+                            </label>
+                        </div>
+                    </div>
+                    <% }); %>
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        var noteTextArea = document.getElementById('note');
+        noteTextArea.addEventListener('blur', function () {
+            var noteContent = noteTextArea.value;
+            var noteId = noteTextArea.getAttribute('note-id');
+
+            $.ajax({
+                url: '/addNote',
+                method: 'GET',
+                data: { note: noteContent, noteId: noteId },
+                success: function (response) {
+                    console.log('add note', response);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Wystąpił błąd ', error);
+                }
+            });
+        })
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var calendarEl = document.getElementById('calendar');
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+
+                timeZone: 'local',
+                initialView: 'dayGridMonth',
+
+                headerToolbar: {
+                    right: 'next',
+                    center: 'title',
+                    left: 'prev',
+                },
+
+                editable: true,
+                dayMaxEvents: true,
+                events: "/eventGet",
+                themeSystem: 'bootstrap',
+
+                dateClick: function (info) {
+                    showModal(info.dateStr);
+                },
+
+                eventClick: function (info) {
+                    updateEvent(info);
+                },
+
+                dayCellContent: function (arg) {
+                    arg.dayNumberText = arg.dayNumberText.replace('Today', '').trim();
+                    return { html: '<span style="color: black; text-decoration:none">' + arg.dayNumberText + '</span>' };
+                },
+                viewDidMount: function (arg) {
+                    var headerEls = document.querySelectorAll('.fc th.fc-day-header');
+                    headerEls.forEach(function (headerEl) {
+                        headerEl.style.color = 'black';
+                    });
+
+                },
+
+            });
+
+
+
+            var listEl = document.getElementById('list');
+
+            var list = new FullCalendar.Calendar(listEl, {
+                timeZone: 'local',
+                initialView: 'listDay',
+                height: "85vh",
+
+                listClick: function (info) {
+                    showModal(info.date);
+                },
+
+                eventClick: function (info) {
+                    updateEvent(info);
+                },
+
+                editable: true,
+                selectable: true,
+
+
+
+                headerToolbar: {
+                    left: 'prev,next',
+                    center: 'title',
+                    right: 'listDay,listWeek,listMonth'
+                },
+
+                views: {
+                    listDay: { buttonText: 'today' },
+                    listWeek: { buttonText: 'week' },
+                    listMonth: { buttonText: 'month' },
+                },
+
+                titleFormat: {
+                    day: 'numeric',
+                    month: 'long',
+                },
+
+                events: "/eventGet",
+            });
+
+
+            calendar.render();
+            list.render();
+
+            function updateEvent(info) {
+                var event = info.event;
+                $('#UpdateEventModal').modal('show');
+                $('#confirmDeleteEvent').on('click', function () {
+                    event.remove();
+
+                    $('#UpdateEventModal').modal('hide');
+
+                    var eventId = event.id;
+                    $.ajax({
+                        url: '/eventDelete',
+                        method: 'GET',
+                        data: { eventId: eventId },
+                        success: function (response) {
+                            console.log('Wydarzenie zostało pomyślnie usunięte z bazy danych.', response);
+                        },
+                        error: function (xhr, status, error) {
+                            console.error('Wystąpił błąd podczas usuwania wydarzenia z bazy danych:', error);
+                        }
+                    });
+                    location.reload();
+                });
+            }
+
+            function showModal(date) {
+                $('#exampleModal').modal('show');
+                $('#eventStart').val(date);
+                $('#eventEnd').val(date);
+            }
+
+            $('#saveEventBtn').click(function () {
+
+                var eventTitle = $('#eventTitle').val();
+                var eventStart = $('#eventStart').val();
+                var eventEnd = $('#eventEnd').val();
+                var allDay = $("#allDayCheckbox").prop("checked");
+
+                calendar.addEvent({
+                    title: eventTitle,
+                    start: eventStart,
+                    end: eventEnd,
+                    allDay: true,
+
+                });
+
+                list.addEvent({
+                    title: eventTitle,
+                    start: eventStart,
+                    end: eventEnd,
+                    allDay: true
+                });
+
+                $('#exampleModal').modal('hide');
+            });
+
+        });
+
+
+        // ////////////
+
+
+        var i = 0; var name;
+        function addHabit() {
+            i++;
+            var original = document.getElementById('0');
+            var copy = original.cloneNode(true);
+            name = i;
+            copy.id = name;
+            copy.className = 'habit';
+            copy.style.display = 'block';
+            var inputField = copy.querySelector('input');
+            inputField.id = i;
+            var toHabits = document.getElementById('Habits');
+            toHabits.appendChild(copy);
+        }
+
+
+        function removeHabit(button) {
+
+            var habitDiv = button.parentNode.parentNode;
+            habitDiv.parentNode.removeChild(habitDiv);
+        }
+
+        var checkboxes = document.querySelectorAll('input[name="checkbox"]');
+
+        checkboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+
+                var day = this.dataset.day;
+                var habitID = this.dataset.habitId;
+                var value = this.dataset.value;
+
+                $.ajax({
+                    url: '/checkboxUpdate',
+                    method: 'GET',
+                    data: { day: day, habitID: habitID, value: value },
+
+                });
+                location.reload();
+
+            });
+        });
+
+
+        function executeOnMonday() {
+            var today = new Date();
+            var dayOfWeek = today.getDay();
+
+            if (dayOfWeek === 2) {
+
+                var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+                checkboxes.forEach(function (checkbox) {
+
+
+                    var day = this.dataset.day;
+                    var habitID = this.dataset.habitId;
+                    var value = 0;
+
+                    $.ajax({
+                        url: '/checkboxUpdate',
+                        method: 'GET',
+                        data: { day: day, habitID: habitID, value: value },
+
+                    });
+                });
+                location.reload();
+            }
+        }
+
+        setInterval(executeOnMonday, 3600000);
+
+    </script>
+
+    <style>
+        #list .fc-scroller {
+            background-color: #dde6c8;
+        }
+
+        #calendar .fc-prev-button {
+            background-color: rgb(255, 255, 255);
+            color: black;
+            border-radius: 50px;
+            border: none;
+        }
+
+        #calendar .fc-prev-button:hover {
+            background-color: rgb(202, 202, 202);
+        }
+
+        #calendar .fc-next-button {
+            background-color: rgb(255, 255, 255);
+            color: black;
+            border-radius: 50px;
+            border: none;
+        }
+
+        #calendar .fc-next-button:hover {
+            background-color: rgb(202, 202, 202);
+        }
+
+
+        #list .fc-prev-button {
+            background-color: rgb(255, 255, 255);
+            color: black;
+            border-radius: 50px;
+            border: none;
+        }
+
+        #list .fc-prev-button:hover {
+            background-color: rgb(202, 202, 202);
+        }
+
+        #list .fc-next-button {
+            background-color: rgb(255, 255, 255);
+            color: black;
+            border-radius: 50px;
+            border: none;
+        }
+
+        #list .fc-next-button:hover {
+            background-color: rgb(202, 202, 202);
+        }
+
+
+
+        #list .fc-listDay-button {
+            background-color: #ffffff;
+            color: black;
+            font-weight: bold;
+            margin-right: 20px;
+            padding: 5px;
+            border: none;
+            border-bottom: 4px solid #709041;
+        }
+
+
+        #list .fc-listWeek-button {
+            background-color: #ffffff;
+            font-weight: bold;
+            color: black;
+            margin-right: 20px;
+            border: none;
+            border-bottom: 4px solid #709041;
+            padding: 5px;
+        }
+
+        #list .fc-listMonth-button {
+            background-color: #ffffff;
+            font-weight: bold;
+            color: black;
+            border: none;
+            border-bottom: 4px solid #709041;
+            padding: 5px;
+        }
+
+        #list .fc-listDay-button:hover {
+            background-color: #c0c0c0;
+        }
+
+        #list .fc-listMonth-button:hover {
+            background-color: #c0c0c0;
+        }
+
+        #list .fc-listWeek-button:hover {
+            background-color: #c0c0c0;
+        }
+
+        .buttonIcon {
+            color: rgb(56, 56, 56);
+            border-radius: 100px;
+        }
+
+        .buttonIcon:hover {
+            color: rgb(0, 0, 0);
+            background-color: #7f807f41;
+
+        }
+
+        :root {
+            --fc-today-bg-color: #ffffff;
+            --fc-border-color: rgb(0, 0, 0);
+
+            & a {
+                text-decoration: none;
+            }
+
+            & table {
+                border: 3px solid black;
+            }
+
+
+            & th {
+                text-align: center;
+                background-color: #ECF39E;
+            }
+        }
+
+
+        :root #calendar {
+            --fc-today-bg-color: #7a9c31;
+        }
+
+        .fc-col-header-cell-cushion {
+            background-color: #ECF39E;
+            color: black;
+            text-decoration: none;
+        }
+
+        textarea::-webkit-scrollbar {
+            display: none;
+        }
+
+        .fc-daygrid-day-events::before {
+
+            color: rgb(255, 255, 255);
+        }
+
+        /*  */
+
+        .habit {
+
+            background-color: #B8C4A1;
+            padding: 10px;
+        }
+
+        .habitCheck {
+            justify-content: space-between;
+            display: flex;
+            background-color: transparent;
+            height: max-content;
+            grid: 10px;
+        }
+
+        .habitName {
+            background-color: #ffffff8f;
+            width: 80%;
+            height: max-content;
+            border: 1px solid #2E4237;
+            position: static;
+            padding: 8px;
+        }
+
+        label {
+            height: max-content;
+            background-color: transparent;
+        }
+
+        input[type="checkbox"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: #333232;
+            margin: 0;
+
+            font: inherit;
+            color: currentColor;
+            /* width: 1.8rem; */
+            width: fit-content;
+            height: fit-content;
+            /* height: 1.8rem; */
+            border: 0.15em solid transparent;
+            border-radius: 20px;
+            transform: translateY(-0.075em);
+
+            display: grid;
+            place-content: center;
+        }
+
+        input[type="checkbox"]::before {
+            color: white;
+            content: "";
+            width: 1em;
+            height: 1em;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            transform: scale(0);
+            transform-origin: bottom left;
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em;
+            background-color: CanvasText;
+        }
+
+        input[type="checkbox"]:checked::before {
+            transform: scale(1);
+        }
+
+
+        .radio-container {
+            margin-bottom: 15px;
+        }
+
+        /* ///////////////// */
+        .important {
+            display: inline-block;
+            margin-right: 10px;
+            position: relative;
+            padding-left: 25px;
+            cursor: pointer;
+        }
+
+        .important:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+        }
+
+        .radio-input {
+            display: none;
+        }
+
+        .radio-input:checked+.important:before {
+            background-color: #dd0101;
+        }
+
+        /* ///////////////// */
+
+        .task {
+            display: inline-block;
+            margin-right: 10px;
+            position: relative;
+            padding-left: 25px;
+            cursor: pointer;
+        }
+
+        .task:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+        }
+
+        .radio-input {
+            display: none;
+        }
+
+        .radio-input:checked+.task:before {
+            background-color: #0084ff;
+        }
+
+        /* ///////////////// */
+        .event {
+            display: inline-block;
+            margin-right: 10px;
+            position: relative;
+            padding-left: 25px;
+            cursor: pointer;
+        }
+
+        .event:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ccc;
+            border-radius: 50%;
+        }
+
+        .radio-input {
+            display: none;
+        }
+
+        .radio-input:checked+.event:before {
+            background-color: #ffbb00;
+            /* Kolor kwadracika po zaznaczeniu */
+        }
+    </style>
+
+
+    <%- include ('../_partial/_footer'); -%>
