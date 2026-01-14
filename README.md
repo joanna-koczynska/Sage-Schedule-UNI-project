@@ -14,3 +14,9 @@ Technology and Design:
   The application is a web solution (running in a browser), built based on the Node.js environment and an SQLite database.
 
 <img width="605" height="290" alt="image" src="https://github.com/user-attachments/assets/035f498d-b2b1-431a-9c6b-84783eccb1e2" />
+
+<img width="945" height="447" alt="image" src="https://github.com/user-attachments/assets/204d5aec-335c-4306-8d05-d6006bfaafaf" />
+
+<img width="945" height="445" alt="image" src="https://github.com/user-attachments/assets/2fac9372-f7a3-4722-be42-2ea4aaff3dac" />
+
+<img width="945" height="447" alt="image" src="https://github.com/user-attachments/assets/f0302664-5b3a-40fa-8a47-2f01cd379a20" />
