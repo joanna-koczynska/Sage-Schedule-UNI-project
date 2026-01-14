@@ -12,3 +12,5 @@ Key Features:
 
 Technology and Design: 
   The application is a web solution (running in a browser), built based on the Node.js environment and an SQLite database.
+
+<img width="605" height="290" alt="image" src="https://github.com/user-attachments/assets/035f498d-b2b1-431a-9c6b-84783eccb1e2" />
